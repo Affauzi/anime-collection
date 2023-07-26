@@ -31,14 +31,12 @@ const HomePage = () => {
   }, [page]);
 
   const handleAddCollection = () => {
-    const existingItemsJSON = localStorage.getItem("_collection");
-    const existingItems = existingItemsJSON
-      ? JSON.parse(existingItemsJSON)
-      : [];
-
-    existingItems.push(collection);
-
-    localStorage.setItem("_collection", JSON.stringify(existingItems));
+    // const existingItemsJSON = localStorage.getItem("_collection");
+    // const existingItems = existingItemsJSON
+    //   ? JSON.parse(existingItemsJSON)
+    //   : [];
+    // existingItems.push(collection);
+    // localStorage.setItem("_collection", JSON.stringify(existingItems));
   };
 
   return (
