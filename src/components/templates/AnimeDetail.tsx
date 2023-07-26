@@ -21,6 +21,14 @@ const AnimeDetail = () => {
   const [collection, setCollection] = React.useState<any>();
   const id = usePathname().split("/")[2];
 
+  const listedCollection = collection?.filter((item: any) => {
+    return item.animeId.includes(anime?.id);
+  });
+
+  const allListedCollection = listedCollection?.map((item: any) => {
+    return item.name;
+  });
+
   React.useEffect(() => {
     const localCollectionJSON = localStorage.getItem("_collection");
     const localCollection = localCollectionJSON
@@ -83,12 +91,19 @@ const AnimeDetail = () => {
         dangerouslySetInnerHTML={{ __html: anime?.description }}
       />
 
-      <Text>This Anime Added to Collection:</Text>
-      {collection?.map((item: any, index: number) => (
-        <TextDesc key={index} style={{ fontSize: "16px" }}>
-          {item.name}
-        </TextDesc>
-      ))}
+      {!_isEmpty(allListedCollection) && (
+        <>
+          <Text>
+            This Anime Added to Collection:{" "}
+            {allListedCollection.map((item: any) => item).join(", ")}
+          </Text>
+          {/* <TextDesc>
+            {allListedCollection.map((item: any, index: number) => (
+              <div key={index}>{item}</div>
+            ))}
+          </TextDesc> */}
+        </>
+      )}
       <Button
         onClick={() => {
           setOpenModal(true);

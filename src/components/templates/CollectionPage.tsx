@@ -3,44 +3,123 @@ import React from "react";
 import { Container } from "../molecules/Container";
 import _isEmpty from "lodash/isEmpty";
 import _ from "lodash";
+import { Button } from "../molecules/Button";
+import ModalCard from "../organism/ModalCard";
+import { Text } from "../molecules/Text";
+import Input from "../molecules/Input";
+import { Card } from "../molecules/Card";
+import { CardList } from "../molecules/CardList";
 
 const CollectionPage = () => {
-  const [collection, setCollection] = React.useState<any>([
-    { collectionName: "", collectionItems: [] },
-  ]);
-
-  if (typeof window !== "undefined") {
-    // Perform localStorage action
-    const getLocalCollection = localStorage.getItem("_collection");
-  }
+  const [collection, setCollection] = React.useState<any>();
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const [tempName, setTempName] = React.useState<string>("");
 
   React.useEffect(() => {
-    const getLocalCollection = localStorage.getItem("_collection");
-    if (getLocalCollection) {
-      setCollection(JSON.parse(getLocalCollection));
-    }
+    const localCollectionJSON = localStorage.getItem("_collection");
+    const localCollection = localCollectionJSON
+      ? JSON.parse(localCollectionJSON)
+      : [];
+
+    setCollection(localCollection);
   }, []);
+
+  const handleAddCollection = () => {
+    const data = { name: tempName, animeId: [] };
+    const existingItemsJSON = localStorage.getItem("_collection");
+    const existingItems = existingItemsJSON
+      ? JSON.parse(existingItemsJSON)
+      : [];
+
+    const existingItemName = _.map(existingItems, "name");
+
+    if (!_isEmpty(existingItems) && existingItemName?.includes(tempName)) {
+    } else {
+      setCollection([...collection, data]);
+      existingItems.push(data);
+    }
+
+    localStorage.setItem("_collection", JSON.stringify(existingItems));
+    setOpenModal(false);
+  };
 
   return (
     <Container>
-      <h1>Collection</h1>
-
-      {!_isEmpty(collection) && (
-        <div>
-          {collection.map((item: any) => (
-            <div>
-              <h3>{item?.collectionName}</h3>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          marginTop: "40px",
+          justifyContent: "space-between",
+        }}
+      >
+        <h1>My Collection</h1>
+        <Button onClick={() => setOpenModal(true)} style={{ maxHeight: 60 }}>
+          Add New Collection
+        </Button>
+      </div>
+      <div style={{ marginTop: "24px" }}>
+        <CardList style={{ justifyContent: "flex-start" }}>
+          {collection?.map((coll: any, index: number) => (
+            <Card
+              key={index}
+              style={{
+                justifyContent: "space-between",
+                cursor: "pointer",
+                zIndex: 1,
+                maxHeight: "200px",
+                minHeight: "0px",
+                minWidth: "200px",
+              }}
+            >
               <div>
-                {item?.collectionItems?.map((item: any) => (
-                  <div>
-                    <h4>{item?.title.romaji}</h4>
-                    <img src={item?.coverImage.medium} />
-                  </div>
-                ))}
+                <Text style={{ fontSize: 24, textAlign: "center" }}>
+                  {coll.name}
+                </Text>
+                <Text style={{ fontSize: 16, textAlign: "center" }}>
+                  {coll.animeId.length} Anime
+                </Text>
               </div>
-            </div>
+            </Card>
           ))}
-        </div>
+        </CardList>
+      </div>
+      {openModal && (
+        <ModalCard onClose={() => setOpenModal(false)}>
+          <div>
+            <>
+              <Text style={{ fontSize: 24, textAlign: "center" }}>
+                Create New Collection?
+              </Text>
+              <Input
+                placeholder="Enter collection name"
+                onChange={(e) => {
+                  setTempName(e.target.value);
+                }}
+                style={{ marginBottom: "12px" }}
+              />
+            </>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                textAlign: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Button
+                style={{ marginRight: "12px" }}
+                onClick={() => {
+                  handleAddCollection();
+                }}
+              >
+                Yes
+              </Button>
+              <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+            </div>
+          </div>
+        </ModalCard>
       )}
     </Container>
   );
