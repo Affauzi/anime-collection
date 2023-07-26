@@ -9,10 +9,13 @@ import { CardList } from "../molecules/CardList";
 import { Button } from "../molecules/Button";
 import { Text } from "../molecules/Text";
 import { useRouter } from "next/navigation";
+import ModalCard from "../organism/ModalCard";
 
 const HomePage = () => {
-  const [collections, setCollections] = React.useState<any[]>([]);
+  const [animeLists, setAnimeLists] = React.useState<any[]>([]);
+  const [collection, setCollection] = React.useState<any>();
   const [page, setPage] = React.useState<number>(1);
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
 
   const router = useRouter();
 
@@ -23,9 +26,20 @@ const HomePage = () => {
         variables: { page: page, perPage: 10 },
       })
       .then((res) => {
-        setCollections(res.data.Page.media);
+        setAnimeLists(res.data.Page.media);
       });
   }, [page]);
+
+  const handleAddCollection = () => {
+    const existingItemsJSON = localStorage.getItem("_collection");
+    const existingItems = existingItemsJSON
+      ? JSON.parse(existingItemsJSON)
+      : [];
+
+    existingItems.push(collection);
+
+    localStorage.setItem("_collection", JSON.stringify(existingItems));
+  };
 
   return (
     <Container style={{ maxWidth: "none" }}>
@@ -33,20 +47,74 @@ const HomePage = () => {
         Anime Collection
       </Text>
       <CardList style={{ marginBottom: "24px" }}>
-        {collections.map((media: any) => (
+        {animeLists.map((media: any, index: number) => (
           <Card
             key={media.id}
-            style={{ justifyContent: "center", cursor: "pointer" }}
-            onClick={() => router.push(`/detail/${media.id}`)}
+            style={{
+              justifyContent: "space-between",
+              cursor: "pointer",
+              zIndex: 1,
+            }}
+            onClick={() => {
+              if (!openModal) {
+                router.push(`/detail/${media.id}`);
+              }
+            }}
           >
-            <img
-              src={media.coverImage.large}
-              alt={media.title.english}
-              style={{ borderRadius: "8px", maxHeight: 300 }}
-            />
-            <Text style={{ textAlign: "center" }}>
-              {media.title.english || media.title.native}
-            </Text>
+            <div>
+              <img
+                src={media.coverImage.large}
+                alt={media.title.english}
+                style={{ borderRadius: "8px", maxHeight: 300 }}
+              />
+              <Text style={{ textAlign: "center" }}>
+                {media.title.english || media.title.native}
+              </Text>
+            </div>
+
+            <Button
+              onClick={(event) => {
+                event.stopPropagation();
+                setCollection(media);
+                setOpenModal(true);
+              }}
+              style={{ zIndex: 10 }}
+            >
+              Add to Collection
+            </Button>
+            {openModal && (
+              <ModalCard onClose={() => setOpenModal(false)}>
+                <div>
+                  <Text style={{ fontSize: 24, textAlign: "center" }}>
+                    Add this to your collection?
+                  </Text>
+                  <img
+                    src={collection.coverImage.large}
+                    alt={collection.title.english}
+                    style={{ borderRadius: "8px", maxHeight: 300 }}
+                  />
+                  <Text style={{ textAlign: "center" }}>
+                    {collection.title.english || collection.title.native}
+                  </Text>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      textAlign: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Button
+                      style={{ marginRight: "12px" }}
+                      onClick={handleAddCollection}
+                    >
+                      Yes
+                    </Button>
+                    <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+                  </div>
+                </div>
+              </ModalCard>
+            )}
           </Card>
         ))}
       </CardList>

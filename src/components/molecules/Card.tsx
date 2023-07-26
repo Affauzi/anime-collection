@@ -9,4 +9,6 @@ export const Card = styled.div`
   max-width: min-content;
   margin: 16px
   min-width: 300px;
+  display: flex;
+  flex-direction: column;
 `;

@@ -1,13 +1,14 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Nav } from "../molecules/Nav";
-import { Text } from "../molecules/Text";
 
 const Navbar = () => {
+  const router = useRouter();
   return (
     <Nav>
       <div>
-        <a href="/">
+        <a onClick={() => router.push("/")}>
           <img
             src="/logo.png"
             alt="logo"
@@ -17,10 +18,10 @@ const Navbar = () => {
       </div>
       <ul>
         <li>
-          <a href="/">Home</a>
+          <a onClick={() => router.push("/")}>Home</a>
         </li>
         <li>
-          <a href="/about">My Collection</a>
+          <a onClick={() => router.push("/collection")}>My Collection</a>
         </li>
       </ul>
     </Nav>
