@@ -126,7 +126,7 @@ const AnimeDetail = () => {
             {_isEmpty(collection) ? (
               <>
                 <Text style={{ fontSize: 24, textAlign: "center" }}>
-                  You don't have collection yet, do you want to create new
+                  You don&apos;t have collection yet, do you want to create new
                   collection?
                 </Text>
                 <Input
