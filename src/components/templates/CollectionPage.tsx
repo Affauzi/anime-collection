@@ -10,6 +10,7 @@ import Input from "../molecules/Input";
 import { Card } from "../molecules/Card";
 import { CardList } from "../molecules/CardList";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const CollectionPage = () => {
   const [collection, setCollection] = React.useState<any>();
@@ -82,7 +83,7 @@ const CollectionPage = () => {
       </div>
       {_isEmpty(collection) ? (
         <div style={{ marginTop: "24px" }}>
-          <Text>You don't have any collection yet</Text>
+          <Text>You don&apos;t have any collection yet</Text>
         </div>
       ) : (
         <div style={{ marginTop: "24px" }}>
@@ -107,7 +108,12 @@ const CollectionPage = () => {
                     handleRemoveCollection(coll.name);
                   }}
                 >
-                  <img src="/remove.svg" width={40} height={40} />
+                  <Image
+                    src="/remove.svg"
+                    width={40}
+                    height={40}
+                    alt="remove"
+                  />
                 </div>
                 <div>
                   <Text style={{ fontSize: 24, textAlign: "center" }}>

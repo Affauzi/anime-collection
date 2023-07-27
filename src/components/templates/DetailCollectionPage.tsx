@@ -10,6 +10,7 @@ import { GET_ANIME_DETAIL } from "@/services/graphql";
 import { Text } from "../molecules/Text";
 import { CardList } from "../molecules/CardList";
 import { Card } from "../molecules/Card";
+import Image from "next/image";
 
 const DetailCollectionPage = () => {
   const detail = usePathname().split("/")[2].split("%20").join(" ");
@@ -48,7 +49,7 @@ const DetailCollectionPage = () => {
 
       {_isEmpty(collectionDetail) ? (
         <div>
-          <Text>You don't have any anime list</Text>
+          <Text>You don&apos;t have any anime list</Text>
         </div>
       ) : (
         <CardList style={{ marginBottom: "24px" }}>
@@ -65,7 +66,9 @@ const DetailCollectionPage = () => {
               }}
             >
               <div>
-                <img
+                <Image
+                  width={200}
+                  height={300}
                   src={media.coverImage.large}
                   alt={media.title.english}
                   style={{ borderRadius: "8px", maxHeight: 300 }}

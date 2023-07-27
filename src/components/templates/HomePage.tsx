@@ -13,6 +13,7 @@ import ModalCard from "../organism/ModalCard";
 import Select from "../molecules/Select";
 import _isEmpty from "lodash/isEmpty";
 import _ from "lodash";
+import Image from "next/image";
 
 const HomePage = () => {
   const [animeLists, setAnimeLists] = React.useState<any[]>([]);
@@ -88,7 +89,9 @@ const HomePage = () => {
             }}
           >
             <div>
-              <img
+              <Image
+                width={200}
+                height={300}
                 src={media.coverImage.large}
                 alt={media.title.english}
                 style={{ borderRadius: "8px", maxHeight: 300 }}
@@ -117,7 +120,9 @@ const HomePage = () => {
                   <Text style={{ fontSize: 24, textAlign: "center" }}>
                     Add this to your collection?
                   </Text>
-                  <img
+                  <Image
+                    width={200}
+                    height={300}
                     src={selectedAnime.coverImage.large}
                     alt={selectedAnime.title.english}
                     style={{ borderRadius: "8px", maxHeight: 300 }}
