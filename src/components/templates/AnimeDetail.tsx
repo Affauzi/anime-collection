@@ -47,7 +47,6 @@ const AnimeDetail = () => {
       });
   }, [id]);
 
-  console.log(collection);
 
   const handleAddCollection = () => {
     const data = { name: tempName, animeId: [anime?.id] };

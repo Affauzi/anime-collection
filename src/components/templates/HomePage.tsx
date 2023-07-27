@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import ModalCard from "../organism/ModalCard";
 import Select from "../molecules/Select";
 import _isEmpty from "lodash/isEmpty";
+import _ from "lodash";
 
 const HomePage = () => {
   const [animeLists, setAnimeLists] = React.useState<any[]>([]);
@@ -41,16 +42,30 @@ const HomePage = () => {
       });
   }, [page]);
 
-  const handleAddCollection = () => {
-    // const existingItemsJSON = localStorage.getItem("_collection");
-    // const existingItems = existingItemsJSON
-    //   ? JSON.parse(existingItemsJSON)
-    //   : [];
-    // existingItems.push(collection);
-    // localStorage.setItem("_collection", JSON.stringify(existingItems));
-  };
+  const handleAddCollection = (id: number) => {
+    const data = { name: tempName, animeId: [selectedAnime.id] };
 
-  console.log(collection);
+    const existingItemsJSON = localStorage.getItem("_collection");
+    const existingItems = existingItemsJSON
+      ? JSON.parse(existingItemsJSON)
+      : [];
+
+    const existingItem = _.find(existingItems, {
+      name: !_isEmpty(tempName) ? tempName : collection[0].name,
+    });
+
+    if (existingItem?.animeId.includes(selectedAnime.id)) {
+    } else if (existingItem) {
+      existingItem.animeId.push(selectedAnime.id);
+    } else {
+      existingItems.push(data);
+    }
+
+    localStorage.setItem("_collection", JSON.stringify(existingItems));
+
+    setCollection(existingItems);
+    setOpenModal(false);
+  };
 
   return (
     <Container style={{ maxWidth: "none" }}>
@@ -139,7 +154,10 @@ const HomePage = () => {
                   >
                     <Button
                       style={{ marginRight: "12px" }}
-                      onClick={handleAddCollection}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddCollection(media.id);
+                      }}
                     >
                       Yes
                     </Button>
