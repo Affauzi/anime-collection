@@ -73,9 +73,7 @@ const HomePage = () => {
       <Text style={{ fontSize: 48, textAlign: "center" }}>
         Anime Collection
       </Text>
-      <CardList
-        style={{ marginBottom: "40px", maxWidth: 1200, margin: "auto" }}
-      >
+      <CardList style={{ maxWidth: 1200, margin: "0px auto 40px" }}>
         {animeLists.map((media: any, index: number) => (
           <Card
             key={media.id}
