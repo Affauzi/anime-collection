@@ -47,6 +47,7 @@ const AnimeDetail = () => {
       });
   }, [id]);
 
+
   const handleAddCollection = () => {
     const data = { name: tempName, animeId: [anime?.id] };
 
@@ -68,6 +69,7 @@ const AnimeDetail = () => {
 
     localStorage.setItem("_collection", JSON.stringify(existingItems));
 
+    setCollection(existingItems);
     setOpenModal(false);
   };
 
@@ -118,7 +120,7 @@ const AnimeDetail = () => {
             {_isEmpty(collection) ? (
               <>
                 <Text style={{ fontSize: 24, textAlign: "center" }}>
-                  You don't have this collection yet, do you want to create new
+                  You don't have collection yet, do you want to create new
                   collection?
                 </Text>
                 <Input

@@ -9,11 +9,14 @@ import { Text } from "../molecules/Text";
 import Input from "../molecules/Input";
 import { Card } from "../molecules/Card";
 import { CardList } from "../molecules/CardList";
+import { useRouter } from "next/navigation";
 
 const CollectionPage = () => {
   const [collection, setCollection] = React.useState<any>();
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const [tempName, setTempName] = React.useState<string>("");
+
+  const router = useRouter();
 
   React.useEffect(() => {
     const localCollectionJSON = localStorage.getItem("_collection");
@@ -43,6 +46,25 @@ const CollectionPage = () => {
     setOpenModal(false);
   };
 
+  const handleRemoveCollection = (name: string) => {
+    const existingItemsJSON = localStorage.getItem("_collection");
+    const existingItems = existingItemsJSON
+      ? JSON.parse(existingItemsJSON)
+      : [];
+
+    const nameToRemove = existingItems.findIndex(
+      (item: any) => item.name === name
+    );
+
+    if (nameToRemove !== -1) {
+      existingItems.splice(nameToRemove, 1);
+
+      const updatedDataString = JSON.stringify(existingItems);
+
+      localStorage.setItem("_collection", updatedDataString);
+      setCollection(existingItems);
+    }
+  };
   return (
     <Container>
       <div
@@ -58,32 +80,49 @@ const CollectionPage = () => {
           Add New Collection
         </Button>
       </div>
-      <div style={{ marginTop: "24px" }}>
-        <CardList style={{ justifyContent: "flex-start" }}>
-          {collection?.map((coll: any, index: number) => (
-            <Card
-              key={index}
-              style={{
-                justifyContent: "space-between",
-                cursor: "pointer",
-                zIndex: 1,
-                maxHeight: "200px",
-                minHeight: "0px",
-                minWidth: "200px",
-              }}
-            >
-              <div>
-                <Text style={{ fontSize: 24, textAlign: "center" }}>
-                  {coll.name}
-                </Text>
-                <Text style={{ fontSize: 16, textAlign: "center" }}>
-                  {coll.animeId.length} Anime
-                </Text>
-              </div>
-            </Card>
-          ))}
-        </CardList>
-      </div>
+      {_isEmpty(collection) ? (
+        <div style={{ marginTop: "24px" }}>
+          <Text>You don't have any collection yet</Text>
+        </div>
+      ) : (
+        <div style={{ marginTop: "24px" }}>
+          <CardList style={{ justifyContent: "flex-start" }}>
+            {collection?.map((coll: any, index: number) => (
+              <Card
+                key={index}
+                style={{
+                  justifyContent: "space-between",
+                  cursor: "pointer",
+                  zIndex: 1,
+                  maxHeight: "200px",
+                  minHeight: "0px",
+                  minWidth: "200px",
+                }}
+                onClick={() => router.push(`/collection/${coll.name}`)}
+              >
+                <div
+                  style={{ maxWidth: 40 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveCollection(coll.name);
+                  }}
+                >
+                  <img src="/remove.svg" width={40} height={40} />
+                </div>
+                <div>
+                  <Text style={{ fontSize: 24, textAlign: "center" }}>
+                    {coll.name}
+                  </Text>
+                  <Text style={{ fontSize: 16, textAlign: "center" }}>
+                    {coll.animeId.length} Anime
+                  </Text>
+                </div>
+              </Card>
+            ))}
+          </CardList>
+        </div>
+      )}
+
       {openModal && (
         <ModalCard onClose={() => setOpenModal(false)}>
           <div>
