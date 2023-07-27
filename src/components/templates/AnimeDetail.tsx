@@ -13,6 +13,7 @@ import ModalCard from "../organism/ModalCard";
 import _isEmpty from "lodash/isEmpty";
 import _ from "lodash";
 import Select from "../molecules/Select";
+import Image from "next/image";
 
 const AnimeDetail = () => {
   const [anime, setAnime] = React.useState<any>({});
@@ -47,7 +48,6 @@ const AnimeDetail = () => {
       });
   }, [id]);
 
-
   const handleAddCollection = () => {
     const data = { name: tempName, animeId: [anime?.id] };
 
@@ -78,7 +78,13 @@ const AnimeDetail = () => {
       <Text style={{ fontSize: "36px", textAlign: "center" }}>
         {anime?.title?.english || anime?.title?.native}
       </Text>
-      <img src={anime?.coverImage?.large} style={{ alignSelf: "center" }} />
+      <Image
+        width={200}
+        height={300}
+        alt={anime?.title?.english}
+        src={anime?.coverImage?.large}
+        style={{ alignSelf: "center" }}
+      />
 
       <AnimeDescription
         seasonYear={anime.seasonYear}
