@@ -10,16 +10,27 @@ import { Button } from "../molecules/Button";
 import { Text } from "../molecules/Text";
 import { useRouter } from "next/navigation";
 import ModalCard from "../organism/ModalCard";
+import Select from "../molecules/Select";
+import _isEmpty from "lodash/isEmpty";
 
 const HomePage = () => {
   const [animeLists, setAnimeLists] = React.useState<any[]>([]);
   const [collection, setCollection] = React.useState<any>();
   const [page, setPage] = React.useState<number>(1);
   const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const [tempName, setTempName] = React.useState<string>("");
+  const [selectedAnime, setSelectedAnime] = React.useState<any>({} as any);
 
   const router = useRouter();
 
   React.useEffect(() => {
+    const localCollectionJSON = localStorage.getItem("_collection");
+    const localCollection = localCollectionJSON
+      ? JSON.parse(localCollectionJSON)
+      : [];
+
+    setCollection(localCollection);
+
     client
       .query({
         query: GET_COLLECTIONS(),
@@ -38,6 +49,8 @@ const HomePage = () => {
     // existingItems.push(collection);
     // localStorage.setItem("_collection", JSON.stringify(existingItems));
   };
+
+  console.log(collection);
 
   return (
     <Container style={{ maxWidth: "none" }}>
@@ -70,16 +83,19 @@ const HomePage = () => {
               </Text>
             </div>
 
-            <Button
-              onClick={(event) => {
-                event.stopPropagation();
-                setCollection(media);
-                setOpenModal(true);
-              }}
-              style={{ zIndex: 10 }}
-            >
-              Add to Collection
-            </Button>
+            {!_isEmpty(collection) && (
+              <Button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setSelectedAnime(media);
+                  setOpenModal(true);
+                }}
+                style={{ zIndex: 10 }}
+              >
+                Add to Collection
+              </Button>
+            )}
+
             {openModal && (
               <ModalCard onClose={() => setOpenModal(false)}>
                 <div>
@@ -87,13 +103,32 @@ const HomePage = () => {
                     Add this to your collection?
                   </Text>
                   <img
-                    src={collection.coverImage.large}
-                    alt={collection.title.english}
+                    src={selectedAnime.coverImage.large}
+                    alt={selectedAnime.title.english}
                     style={{ borderRadius: "8px", maxHeight: 300 }}
                   />
                   <Text style={{ textAlign: "center" }}>
-                    {collection.title.english || collection.title.native}
+                    {selectedAnime.title.english || selectedAnime.title.native}
                   </Text>
+
+                  <>
+                    <Text style={{ fontSize: 24, textAlign: "center" }}>
+                      Choose your collection
+                    </Text>
+                    <Select
+                      style={{ width: "200px", marginBottom: "12px" }}
+                      onChange={(e) => {
+                        setTempName(e.target.value);
+                      }}
+                      value={tempName || collection[0].name}
+                    >
+                      {collection.map((item: any, index: number) => (
+                        <option value={item.name} key={index}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </>
                   <div
                     style={{
                       display: "flex",
