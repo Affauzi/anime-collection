@@ -11,6 +11,7 @@ import { Card } from "../molecules/Card";
 import { CardList } from "../molecules/CardList";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 const CollectionPage = () => {
   const [collection, setCollection] = React.useState<any>();
@@ -38,13 +39,19 @@ const CollectionPage = () => {
     const existingItemName = _.map(existingItems, "name");
 
     if (!_isEmpty(existingItems) && existingItemName?.includes(tempName)) {
+      setOpenModal(false);
+      return toast.error("Name already used", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } else {
       setCollection([...collection, data]);
       existingItems.push(data);
+      localStorage.setItem("_collection", JSON.stringify(existingItems));
+      setOpenModal(false);
+      return toast.success("Collection added", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     }
-
-    localStorage.setItem("_collection", JSON.stringify(existingItems));
-    setOpenModal(false);
   };
 
   const handleRemoveCollection = (name: string) => {
@@ -62,6 +69,9 @@ const CollectionPage = () => {
 
       const updatedDataString = JSON.stringify(existingItems);
 
+      toast.success("Collection removed", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
       localStorage.setItem("_collection", updatedDataString);
       setCollection(existingItems);
     }

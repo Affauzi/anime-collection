@@ -14,6 +14,7 @@ import Select from "../molecules/Select";
 import _isEmpty from "lodash/isEmpty";
 import _ from "lodash";
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 const HomePage = () => {
   const [animeLists, setAnimeLists] = React.useState<any[]>([]);
@@ -56,16 +57,22 @@ const HomePage = () => {
     });
 
     if (existingItem?.animeId.includes(selectedAnime.id)) {
+      setOpenModal(false);
+      return toast.error("Name already used", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } else if (existingItem) {
       existingItem.animeId.push(selectedAnime.id);
+      localStorage.setItem("_collection", JSON.stringify(existingItems));
+
+      setCollection(existingItems);
+      setOpenModal(false);
+      return toast.success("Collection added", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } else {
       existingItems.push(data);
     }
-
-    localStorage.setItem("_collection", JSON.stringify(existingItems));
-
-    setCollection(existingItems);
-    setOpenModal(false);
   };
 
   return (
@@ -73,9 +80,7 @@ const HomePage = () => {
       <Text style={{ fontSize: 48, textAlign: "center" }}>
         Anime Collection
       </Text>
-      <CardList
-        style={{ marginBottom: "40px", maxWidth: 1200, margin: "auto" }}
-      >
+      <CardList style={{ maxWidth: 1200, margin: "0px auto 40px" }}>
         {animeLists.map((media: any, index: number) => (
           <Card
             key={media.id}

@@ -14,6 +14,7 @@ import _isEmpty from "lodash/isEmpty";
 import _ from "lodash";
 import Select from "../molecules/Select";
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 const AnimeDetail = () => {
   const [anime, setAnime] = React.useState<any>({});
@@ -61,6 +62,9 @@ const AnimeDetail = () => {
     });
 
     if (!_isEmpty(existingItems) && existingItem?.animeId.includes(anime?.id)) {
+      return toast.error("Name already used", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } else if (existingItem) {
       existingItem.animeId.push(anime?.id);
     } else {
@@ -71,114 +75,138 @@ const AnimeDetail = () => {
 
     setCollection(existingItems);
     setOpenModal(false);
+    return toast.success("Collection added", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
   };
 
   return (
-    <Container>
-      <Text style={{ fontSize: "36px", textAlign: "center" }}>
-        {anime?.title?.english || anime?.title?.native}
-      </Text>
-      <Image
-        width={200}
-        height={300}
-        alt={anime?.title?.english}
-        src={anime?.coverImage?.large}
-        style={{ alignSelf: "center" }}
-      />
-
-      <AnimeDescription
-        seasonYear={anime.seasonYear}
-        status={anime.status}
-        genres={anime.genres}
-        averageScore={anime.averageScore}
-        isAdult={anime.isAdult}
-      />
-
-      <Text
-        style={{ fontSize: "14px", textAlign: "justify" }}
-        dangerouslySetInnerHTML={{ __html: anime?.description }}
-      />
-
-      {!_isEmpty(allListedCollection) && (
-        <>
-          <Text>
-            This Anime Added to Collection:{" "}
-            {allListedCollection.map((item: any) => item).join(", ")}
+    <Container
+      style={{
+        backgroundImage: `url(${anime?.bannerImage})`,
+        backgroundRepeat: "no-repeat",
+        maxWidth: "none",
+        width: "100%",
+        marginTop: "70px",
+        height: "400px",
+      }}
+    >
+      <Container style={{ marginTop: "240px" }}>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <Image
+            width={200}
+            height={300}
+            alt={anime?.title?.english}
+            src={anime?.coverImage?.large}
+            style={{ alignSelf: "center" }}
+          />
+          <Text
+            style={{
+              fontSize: "36px",
+              textAlign: "center",
+              alignSelf: "end",
+              marginLeft: "12px",
+            }}
+          >
+            {anime?.title?.english || anime?.title?.native}
           </Text>
-          {/* <TextDesc>
-            {allListedCollection.map((item: any, index: number) => (
-              <div key={index}>{item}</div>
-            ))}
-          </TextDesc> */}
-        </>
-      )}
-      <Button
-        onClick={() => {
-          setOpenModal(true);
-        }}
-      >
-        Add to My Collection
-      </Button>
+        </div>
 
-      {openModal && (
-        <ModalCard onClose={() => setOpenModal(false)}>
-          <div>
-            {_isEmpty(collection) ? (
-              <>
-                <Text style={{ fontSize: 24, textAlign: "center" }}>
-                  You don&apos;t have collection yet, do you want to create new
-                  collection?
-                </Text>
-                <Input
-                  placeholder="Enter collection name"
-                  onChange={(e) => {
-                    setTempName(e.target.value);
-                  }}
-                  style={{ marginBottom: "12px" }}
-                />
-              </>
-            ) : (
-              <>
-                <Text style={{ fontSize: 24, textAlign: "center" }}>
-                  Choose your collection
-                </Text>
-                <Select
-                  style={{ width: "200px", marginBottom: "12px" }}
-                  onChange={(e) => {
-                    setTempName(e.target.value);
-                  }}
-                  value={tempName || collection[0].name}
-                >
-                  {collection.map((item: any, index: number) => (
-                    <option value={item.name} key={index}>
-                      {item.name}
-                    </option>
-                  ))}
-                </Select>
-              </>
-            )}
+        <AnimeDescription
+          seasonYear={anime.seasonYear}
+          status={anime.status}
+          genres={anime.genres}
+          averageScore={anime.averageScore}
+          isAdult={anime.isAdult}
+        />
 
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                textAlign: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Button
-                style={{ marginRight: "12px" }}
-                onClick={() => {
-                  handleAddCollection();
+        <Text
+          style={{ fontSize: "14px", textAlign: "justify" }}
+          dangerouslySetInnerHTML={{ __html: anime?.description }}
+        />
+
+        {!_isEmpty(allListedCollection) && (
+          <>
+            <Text>
+              This Anime Added to Collection:{" "}
+              {allListedCollection.map((item: any) => item).join(", ")}
+            </Text>
+            {/* <TextDesc>
+           {allListedCollection.map((item: any, index: number) => (
+             <div key={index}>{item}</div>
+           ))}
+         </TextDesc> */}
+          </>
+        )}
+        <Button
+          onClick={() => {
+            setOpenModal(true);
+          }}
+          style={{ marginBottom: 80 }}
+        >
+          Add to My Collection
+        </Button>
+
+        {openModal && (
+          <ModalCard onClose={() => setOpenModal(false)}>
+            <div>
+              {_isEmpty(collection) ? (
+                <>
+                  <Text style={{ fontSize: 24, textAlign: "center" }}>
+                    You don&apos;t have collection yet, do you want to create
+                    new collection?
+                  </Text>
+                  <Input
+                    placeholder="Enter collection name"
+                    onChange={(e) => {
+                      setTempName(e.target.value);
+                    }}
+                    style={{ marginBottom: "12px" }}
+                  />
+                </>
+              ) : (
+                <>
+                  <Text style={{ fontSize: 24, textAlign: "center" }}>
+                    Choose your collection
+                  </Text>
+                  <Select
+                    style={{ width: "200px", marginBottom: "12px" }}
+                    onChange={(e) => {
+                      setTempName(e.target.value);
+                    }}
+                    value={tempName || collection[0].name}
+                  >
+                    {collection.map((item: any, index: number) => (
+                      <option value={item.name} key={index}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </Select>
+                </>
+              )}
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  textAlign: "center",
+                  justifyContent: "center",
                 }}
               >
-                Yes
-              </Button>
-              <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+                <Button
+                  style={{ marginRight: "12px" }}
+                  onClick={() => {
+                    handleAddCollection();
+                  }}
+                >
+                  Yes
+                </Button>
+                <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+              </div>
             </div>
-          </div>
-        </ModalCard>
-      )}
+          </ModalCard>
+        )}
+      </Container>
     </Container>
   );
 };
