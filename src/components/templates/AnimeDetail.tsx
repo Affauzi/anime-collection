@@ -14,6 +14,7 @@ import _isEmpty from "lodash/isEmpty";
 import _ from "lodash";
 import Select from "../molecules/Select";
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 const AnimeDetail = () => {
   const [anime, setAnime] = React.useState<any>({});
@@ -61,6 +62,9 @@ const AnimeDetail = () => {
     });
 
     if (!_isEmpty(existingItems) && existingItem?.animeId.includes(anime?.id)) {
+      return toast.error("Name already used", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } else if (existingItem) {
       existingItem.animeId.push(anime?.id);
     } else {
@@ -71,6 +75,9 @@ const AnimeDetail = () => {
 
     setCollection(existingItems);
     setOpenModal(false);
+    return toast.success("Collection added", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
   };
 
   return (
