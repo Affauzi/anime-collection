@@ -6,7 +6,7 @@ export const GET_COLLECTIONS = () => gql`
       pageInfo {
         total
       }
-      media(type: ANIME) {
+      media(type: ANIME, sort: [TRENDING_DESC, POPULARITY_DESC, SCORE_DESC]) {
         id
         title {
           english
@@ -31,6 +31,7 @@ export const GET_ANIME_DETAIL = () => gql`
       coverImage {
         large
       }
+      bannerImage
       description
       episodes
       genres
