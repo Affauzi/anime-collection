@@ -104,7 +104,7 @@ const CollectionPage = () => {
         </div>
       ) : (
         <div style={{ marginTop: "24px" }}>
-          <CardList style={{ justifyContent: "flex-start" }}>
+          <CardList style={{ justifyContent: "center" }}>
             {collection?.map((coll: any, index: number) => (
               <div key={index}>
                 <Card
