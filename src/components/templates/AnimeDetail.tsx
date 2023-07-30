@@ -5,7 +5,7 @@ import { Container } from "../molecules/Container";
 import { Text, TextDesc } from "../molecules/Text";
 import client from "@/lib/Apollo";
 import { GET_ANIME_DETAIL } from "@/services/graphql";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import AnimeDescription from "../organism/AnimeDescription";
 import Input from "../molecules/Input";
 import { Button } from "../molecules/Button";
@@ -15,12 +15,14 @@ import _ from "lodash";
 import Select from "../molecules/Select";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import { type } from "os";
 
 const AnimeDetail = () => {
   const [anime, setAnime] = React.useState<any>({});
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const [tempName, setTempName] = React.useState<string>("");
   const [collection, setCollection] = React.useState<any>();
+  const [isMobile, setIsMobile] = React.useState<boolean>(false);
   const id = usePathname().split("/")[2];
 
   const listedCollection = collection?.filter((item: any) => {
@@ -30,6 +32,12 @@ const AnimeDetail = () => {
   const allListedCollection = listedCollection?.map((item: any) => {
     return item.name;
   });
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsMobile(window.innerWidth <= 768);
+    }
+  }, []);
 
   React.useEffect(() => {
     const localCollectionJSON = localStorage.getItem("_collection");
@@ -62,6 +70,7 @@ const AnimeDetail = () => {
     });
 
     if (!_isEmpty(existingItems) && existingItem?.animeId.includes(anime?.id)) {
+      setOpenModal(false);
       return toast.error("Name already used", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -88,24 +97,30 @@ const AnimeDetail = () => {
         maxWidth: "none",
         width: "100%",
         marginTop: "70px",
-        height: "400px",
+        maxHeight: "300px",
       }}
     >
       <Container style={{ marginTop: "240px" }}>
-        <div style={{ display: "flex", flexDirection: "row" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: !isMobile ? "row" : "column",
+          }}
+        >
           <Image
             width={200}
             height={300}
             alt={anime?.title?.english}
             src={anime?.coverImage?.large}
-            style={{ alignSelf: "center" }}
+            style={{ alignSelf: !isMobile ? "end" : "center" }}
           />
           <Text
             style={{
-              fontSize: "36px",
               textAlign: "center",
-              alignSelf: "end",
-              marginLeft: "12px",
+              fontSize: "24px",
+              fontWeight: "bold",
+              marginLeft: !isMobile ? "24px" : 0,
+              alignSelf: !isMobile ? "end" : "center",
             }}
           >
             {anime?.title?.english || anime?.title?.native}
@@ -126,17 +141,10 @@ const AnimeDetail = () => {
         />
 
         {!_isEmpty(allListedCollection) && (
-          <>
-            <Text>
-              This Anime Added to Collection:{" "}
-              {allListedCollection.map((item: any) => item).join(", ")}
-            </Text>
-            {/* <TextDesc>
-           {allListedCollection.map((item: any, index: number) => (
-             <div key={index}>{item}</div>
-           ))}
-         </TextDesc> */}
-          </>
+          <Text>
+            This Anime Added to Collection:{" "}
+            {allListedCollection.map((item: any) => item).join(", ")}
+          </Text>
         )}
         <Button
           onClick={() => {
@@ -160,6 +168,14 @@ const AnimeDetail = () => {
                     placeholder="Enter collection name"
                     onChange={(e) => {
                       setTempName(e.target.value);
+                    }}
+                    onKeyDown={(e) => {
+                      if (!/[0-9a-zA-Z ]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                      if (e.key === "Enter") {
+                        handleAddCollection();
+                      }
                     }}
                     style={{ marginBottom: "12px" }}
                   />
@@ -194,10 +210,16 @@ const AnimeDetail = () => {
                 }}
               >
                 <Button
-                  style={{ marginRight: "12px" }}
+                  style={{
+                    marginRight: "12px",
+                    backgroundColor: _isEmpty(tempName || collection[0].name)
+                      ? "gray"
+                      : "#007bff",
+                  }}
                   onClick={() => {
                     handleAddCollection();
                   }}
+                  disabled={_isEmpty(tempName) && _isEmpty(collection[0].name)}
                 >
                   Yes
                 </Button>

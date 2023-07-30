@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 const CollectionPage = () => {
   const [collection, setCollection] = React.useState<any>();
   const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const [openRemoveModal, setOpenRemoveModal] = React.useState<boolean>(false);
   const [tempName, setTempName] = React.useState<string>("");
 
   const router = useRouter();
@@ -74,6 +75,7 @@ const CollectionPage = () => {
       });
       localStorage.setItem("_collection", updatedDataString);
       setCollection(existingItems);
+      setOpenRemoveModal(false);
     }
   };
   return (
@@ -86,8 +88,13 @@ const CollectionPage = () => {
           justifyContent: "space-between",
         }}
       >
-        <h1>My Collection</h1>
-        <Button onClick={() => setOpenModal(true)} style={{ maxHeight: 60 }}>
+        <Text style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>
+          My Collection
+        </Text>
+        <Button
+          onClick={() => setOpenModal(true)}
+          style={{ maxHeight: 60, fontSize: 14 }}
+        >
           Add New Collection
         </Button>
       </div>
@@ -99,41 +106,76 @@ const CollectionPage = () => {
         <div style={{ marginTop: "24px" }}>
           <CardList style={{ justifyContent: "flex-start" }}>
             {collection?.map((coll: any, index: number) => (
-              <Card
-                key={index}
-                style={{
-                  justifyContent: "space-between",
-                  cursor: "pointer",
-                  zIndex: 1,
-                  maxHeight: "200px",
-                  minHeight: "0px",
-                  minWidth: "200px",
-                }}
-                onClick={() => router.push(`/collection/${coll.name}`)}
-              >
-                <div
-                  style={{ maxWidth: 40 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveCollection(coll.name);
+              <div key={index}>
+                <Card
+                  key={index}
+                  style={{
+                    justifyContent: "space-between",
+                    cursor: "pointer",
+                    zIndex: 1,
+                    maxHeight: "200px",
+                    minHeight: "0px",
+                    minWidth: "200px",
                   }}
+                  onClick={() => router.push(`/collection/${coll.name}`)}
                 >
-                  <Image
-                    src="/remove.svg"
-                    width={40}
-                    height={40}
-                    alt="remove"
-                  />
-                </div>
-                <div>
-                  <Text style={{ fontSize: 24, textAlign: "center" }}>
-                    {coll.name}
-                  </Text>
-                  <Text style={{ fontSize: 16, textAlign: "center" }}>
-                    {coll.animeId.length} Anime
-                  </Text>
-                </div>
-              </Card>
+                  <div
+                    style={{ maxWidth: 40 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenRemoveModal(true);
+                    }}
+                  >
+                    <Image
+                      src="/remove.svg"
+                      width={30}
+                      height={30}
+                      alt="remove"
+                    />
+                  </div>
+                  <div>
+                    <Text style={{ fontSize: 24, textAlign: "center" }}>
+                      {coll.name}
+                    </Text>
+                    <Text style={{ fontSize: 16, textAlign: "center" }}>
+                      {coll.animeId.length} Anime
+                    </Text>
+                  </div>
+                </Card>
+                {openRemoveModal && (
+                  <ModalCard onClose={() => setOpenRemoveModal(false)}>
+                    <div>
+                      <Text style={{ fontSize: 24, textAlign: "center" }}>
+                        Are you sure want to remove this collection?
+                      </Text>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          textAlign: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Button
+                          style={{
+                            marginRight: "12px",
+                            backgroundColor: "red",
+                          }}
+                          onClick={() => {
+                            handleRemoveCollection(coll.name);
+                          }}
+                        >
+                          Yes
+                        </Button>
+                        <Button onClick={() => setOpenRemoveModal(false)}>
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  </ModalCard>
+                )}
+              </div>
             ))}
           </CardList>
         </div>
@@ -151,6 +193,14 @@ const CollectionPage = () => {
                 onChange={(e) => {
                   setTempName(e.target.value);
                 }}
+                onKeyDown={(e) => {
+                  if (!/[0-9a-zA-Z ]/.test(e.key)) {
+                    e.preventDefault();
+                  }
+                  if (e.key === "Enter") {
+                    handleAddCollection();
+                  }
+                }}
                 style={{ marginBottom: "12px" }}
               />
             </>
@@ -164,10 +214,14 @@ const CollectionPage = () => {
               }}
             >
               <Button
-                style={{ marginRight: "12px" }}
+                style={{
+                  marginRight: "12px",
+                  backgroundColor: _isEmpty(tempName) ? "gray" : "#007bff",
+                }}
                 onClick={() => {
                   handleAddCollection();
                 }}
+                disabled={_isEmpty(tempName)}
               >
                 Yes
               </Button>
