@@ -58,7 +58,7 @@ const HomePage = () => {
 
     if (existingItem?.animeId.includes(selectedAnime.id)) {
       setOpenModal(false);
-      return toast.error("Name already used", {
+      return toast.error("This anime already added", {
         position: toast.POSITION.TOP_RIGHT,
       });
     } else if (existingItem) {
@@ -76,8 +76,18 @@ const HomePage = () => {
   };
 
   return (
-    <Container style={{ maxWidth: "none" }}>
-      <Text style={{ fontSize: 48, textAlign: "center" }}>
+    <Container
+      style={{
+        maxWidth: "none",
+        backgroundImage: `url(https://images.unsplash.com/photo-1493515322954-4fa727e97985?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80})`,
+        backgroundRepeat: "no-repeat",
+        width: "100%",
+        marginTop: "70px",
+        height: "100%",
+        backgroundSize: "cover",
+      }}
+    >
+      <Text style={{ fontSize: 48, textAlign: "center", color: "white" }}>
         Anime Collection
       </Text>
       <CardList style={{ maxWidth: 1200, margin: "0px auto 40px" }}>
@@ -124,12 +134,12 @@ const HomePage = () => {
             {openModal && (
               <ModalCard onClose={() => setOpenModal(false)}>
                 <div>
-                  <Text style={{ fontSize: 24, textAlign: "center" }}>
+                  <Text style={{ fontSize: 14, textAlign: "center" }}>
                     Add this to your collection?
                   </Text>
                   <Image
-                    width={200}
-                    height={300}
+                    width={100}
+                    height={150}
                     src={selectedAnime.coverImage.large}
                     alt={selectedAnime.title.english}
                     style={{ borderRadius: "8px", maxHeight: 300 }}
@@ -139,7 +149,7 @@ const HomePage = () => {
                   </Text>
 
                   <>
-                    <Text style={{ fontSize: 24, textAlign: "center" }}>
+                    <Text style={{ fontSize: 12, textAlign: "center" }}>
                       Choose your collection
                     </Text>
                     <Select

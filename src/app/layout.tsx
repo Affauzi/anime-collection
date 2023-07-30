@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import Navbar from "@/components/organism/Navbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Footer from "@/components/organism/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +25,7 @@ export default function RootLayout({
           <ToastContainer />
           <Navbar />
           <main>{children}</main>
+          <Footer />
         </body>
       </ApolloClientProvider>
     </html>
